@@ -16,16 +16,20 @@ app.use(
 app.use(express.json());
 
 app.use(logger);
-app.use(auth);
 
-app.get("/api/logic1", (req, res) => {
-  console.log("logic1");
-  res.send("Hello World! - 1");
+app.get("/api/public", (req, res) => {
+  console.log("public");
+  res.send("Hello World! - Public");
 });
 
-app.get("/api/logic2", (req, res) => {
-  console.log("logic2");
-  res.send("Hello World! - 2");
+app.get("/api/private", auth({ block: true }), (req, res) => {
+  console.log("private");
+  res.send(`Hello World! - Private ${res.locals.userId}`);
+});
+
+app.get("/api/prublic", auth({ block: false }), (req, res) => {
+  if (!res.locals.userId) return res.send("Hello World! - Public");
+  res.send(`Hello World! - Prublic ${res.locals.userId}`);
 });
 
 app.use(errorHandler);

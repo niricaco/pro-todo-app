@@ -1,7 +1,10 @@
-const auth = (req, res, next) => {
+const auth = (middlewareParams) => (req, res, next) => {
   console.log("under authentication");
-  const userId = 1;
+  /* const userId = req.get("authorization"); */
+  /* const userId = req.headers.authorization; */
+  const userId = req.header("authorization");
   res.locals.userId = userId;
+  if (middlewareParams.block && !res.locals.userId) return res.sendStatus(401);
   next();
 };
 
