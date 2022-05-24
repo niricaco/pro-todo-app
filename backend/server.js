@@ -1,43 +1,34 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const logger = require("./middlewares/logger");
+const auth = require("./middlewares/auth");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 const port = process.env.PORT;
 
-const corsOptions = {
-  origin: process.env.APP_URL,
-  optionsSuccessStatus: 200,
-};
-
-const myLoggerMiddleware = (req, res, next) => {
-  console.log("logging request");
-  next();
-};
-
-const myAuthMiddleware = (req, res, next) => {
-  console.log("under authentication");
-  const userId = 1``;
-  res.locals.userId = userId;
-  next();
-};
-
-const myBusinessLogicMiddleware = (req, res) => {
-  if (!res.locals.userId) return res.sendStatus(401);
-  console.log("my business logic runs");
-  res.status(200).json("victory");
-};
-
-app.use(myLoggerMiddleware);
-app.use(myAuthMiddleware);
-app.use(myBusinessLogicMiddleware);
-
-/* app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: process.env.APP_URL,
+  })
+);
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-}); */
+app.use(logger);
+app.use(auth);
+
+app.get("/api/logic1", (req, res) => {
+  console.log("logic1");
+  res.send("Hello World! - 1");
+});
+
+app.get("/api/logic2", (req, res) => {
+  console.log("logic2");
+  res.send("Hello World! - 2");
+});
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
