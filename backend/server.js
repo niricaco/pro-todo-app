@@ -13,9 +13,8 @@ app.use(
     origin: process.env.APP_URL,
   })
 );
-app.use(express.json());
-
-app.use(logger);
+app.use(express.json()); // body-ban erkezo json-t parseolni tudja
+app.use(logger); // use this middleware on every request
 
 app.get("/api/public", (req, res) => {
   console.log("public");
