@@ -34,6 +34,4 @@ app.get("/api/prublic", auth({ block: false }), (req, res) => {
 
 app.use(errorHandler);
 
-console.log("end of app.js");
-
 module.exports = app;

@@ -1,5 +1,5 @@
 const auth = (middlewareParams) => (req, res, next) => {
-  console.log("under authentication");
+  console.log("authenticating...");
   /* const userId = req.get("authorization"); */
   /* const userId = req.headers.authorization; */
   const userId = req.header("authorization");
