@@ -1,32 +1,62 @@
 const app = require("../app");
 const mockserver = require("supertest");
-const mongoose = require("mongoose");
 const User = require("../models/user");
-const { MongoMemoryServer } = require("mongodb-memory-server");
+const { startDb, stopDb, deleteAll } = require("./util/inMemoryDb");
 
-test("new user gets empty list", async () => {
-  // given
-  const mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-  const connection = await mongoose.connect(uri);
+describe("/API/dasboard/ get test", () => {
+  let server;
+  let connection;
+  let client;
 
-  const newUser = new User({
-    username: "user",
-    email: "email",
-    password: "password",
+  beforeAll(async () => {
+    [server, connection] = await startDb();
+    client = mockserver.agent(app);
   });
-  const client = mockserver.agent(app);
-  await newUser.save();
-  client.set("authorization", newUser._id);
 
-  // when
-  const response = await client.get("/api/dashboards");
+  afterEach(async () => {
+    await deleteAll(User);
+  });
 
-  // then
-  expect(response.status).toBe(200);
-  const responseData = response.body;
-  expect(responseData.user.dashboards).toStrictEqual([]);
+  afterAll(async () => {
+    await stopDb(connection, server);
+  });
 
-  await connection.disconnect();
-  await mongod.stop();
+  test("new user gets empty list", async () => {
+    // given
+    const newUser = new User({
+      username: "user",
+      email: "email",
+      password: "password",
+    });
+    await newUser.save();
+    client.set("authorization", newUser._id);
+
+    // when
+    const response = await client.get("/api/dashboards");
+
+    // then
+    expect(response.status).toBe(200);
+    const responseData = response.body;
+    expect(responseData.user.dashboards).toStrictEqual([]);
+  });
+
+  test("deleted user receives nothing", async () => {
+    // given
+    const newUser = new User({
+      username: "user",
+      email: "email",
+      password: "password",
+    });
+    await newUser.save();
+    client.set("authorization", newUser._id);
+    await User.deleteMany();
+
+    // when
+    const response = await client.get("/api/dashboards");
+
+    // then
+    expect(response.status).toBe(200);
+    const responseData = response.body;
+    expect(responseData.user).toBeNull();
+  });
 });
