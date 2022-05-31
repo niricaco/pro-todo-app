@@ -25,8 +25,7 @@ describe("/API/dasboard/ get test", () => {
     // given
     const newUser = new User({
       username: "user",
-      email: "email",
-      password: "password",
+      googleId: "googleID",
     });
     await newUser.save();
     client.set("authorization", newUser._id);
@@ -44,8 +43,7 @@ describe("/API/dasboard/ get test", () => {
     // given
     const newUser = new User({
       username: "user",
-      email: "email",
-      password: "password",
+      googleId: "googleID",
     });
     await newUser.save();
     client.set("authorization", newUser._id);

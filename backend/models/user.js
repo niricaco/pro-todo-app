@@ -32,15 +32,21 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   }, // no empty string
-  email: {
+  /* googleId: {
     type: String,
     unique: true,
     required: true,
-  }, // no empty string + validation
-  password: {
-    type: String,
-    required: true,
-  }, // no empty string + validation
+  }, */ // no empty string + validation
+  providers: {
+    google: {
+      type: String,
+      unique: true,
+    },
+    facebook: {
+      type: String,
+      unique: true,
+    },
+  },
   dashboards: [dashboardSchema], // empty list is default?
 });
 
